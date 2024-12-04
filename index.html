@@ -3,13 +3,222 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+  <style>
+/* Google Fonts Import Link */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 260px; /* Largura padrão */
+    background: #2c3e50;
+    z-index: 100;
+    transition: all 0.5s ease; /* Transição suave */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.close {
+    width: 78px; /* Largura quando fechado */
+}
+
+.sidebar.close .nav-links li a .link_name {
+    display: none; /* Oculta o nome do link quando a barra lateral está fechada */
+}
+
+.sidebar .nav-links li a .link_name {
+    display: block; /* Exibe o nome do link quando a barra lateral está aberta */
+    margin-left: 10px; /* Adiciona um espaço à esquerda para melhor visualização */
+}
+
+.sidebar .nav-links li a {
+    justify-content: flex-start; /* Alinha o conteúdo do link à esquerda */
+}
+
+.sidebar:hover {
+    width: 300px; /* Largura ao passar o mouse */
+}
+
+.sidebar:hover .nav-links li a .link_name {
+    display: block; /* Exibe o nome do link ao passar o mouse */
+}
+
+.sidebar .logo-details {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.sidebar .logo-details i {
+    font-size: 30px;
+    color: #fff;
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+}
+
+.sidebar .logo-details .logo_name {
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.sidebar .nav-links {
+    height: 100%;
+    padding: 30px 0 150px 0;
+    overflow: auto;
+}
+
+.sidebar .nav-links li {
+    position: relative;
+    list-style: none;
+    transition: all 0.4s ease;
+}
+
+.sidebar .nav-links li:hover {
+    background: #34495e;
+}
+
+.sidebar .nav-links li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.sidebar .nav-links li a:hover {
+    background: #1abc9c;
+}
+
+.sidebar .nav-links li .sub-menu {
+    padding: 6px 6px 14px 40px;
+    margin-top: -10px;
+    background: #34495e;
+    display: none;
+    border-radius: 5px;
+}
+
+.sidebar .nav-links li.showMenu .sub-menu {
+    display: block;
+}
+
+.home-section {
+    position: relative;
+    height: 100vh;
+    left: 260px;
+    width: calc(100% - 260px);
+    transition: all 0.5s ease;
+    padding: 20px;
+}
+
+.sidebar.close ~ .home-section {
+    left: 78px;
+    width: calc(100% - 78px);
+}
+
+.home-section .home-content {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-section .home-content .text {
+    color: #2c3e50;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column; /* Alinha os elementos em coluna */
+}
+
+form input,
+form select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border 0.3s;
+}
+
+form input:focus,
+form select:focus {
+    border-color: #1abc9c;
+    outline: none;
+}
+
+form button {
+    background: #1abc9c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px; /* Espaço acima do botão */
+}
+
+form button:hover {
+    background: #16a085;
+}
+
+/* Estilizando o campo de seleção */
+form select {
+    appearance: none; /* Remove a aparência padrão do select */
+    background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 10px center; /* Adiciona uma seta personalizada */
+    background-size: 12px; /* Tamanho da seta */
+    padding-right: 30px; /* Espaço para a seta */
+}
+
+.charts-container {
+    display: flex; /* Usar flexbox para alinhar os gráficos lado a lado */
+    justify-content: space-around; /* Espaçar os gráficos uniformemente */
+    margin-top: 20px; /* Espaço acima dos gráficos */
+}
+
+.charts-container > div {
+    flex: 1; /* Permite que os gráficos ocupem espaço igual */
+    max-width: 600px; /* Aumenta a largura máxima de cada gráfico */
+    margin: 0 10px; /* Espaço entre os gráficos */
+    padding: 20px; /* Espaço interno do contêiner */
+}
+
+
+  </style>
   <div class="sidebar close">
     <div class="logo-details">
       <i class='bx bxl-c-plus-plus'></i>
@@ -52,46 +261,63 @@
       <span class="text">Gráficos Detalhados</span>
     </div>
 
+    <!-- Formulário para adicionar consumo de energia -->
     <div>
       <h2>Adicionar Consumo de Energia</h2>
       <form id="energyForm">
-        <input type="text" id="deviceName" placeholder="Nome do Aparelho" required>
-        <input type="number" id="deviceConsumption" placeholder="Consumo (kWh)" required>
-        <input type="text" id="deviceMonth" placeholder="Mês (ex: Janeiro)" required>
-        <button type="submit">Adicionar</button>
+          <input type="text" id="deviceName" placeholder="Nome do Aparelho" required>
+          <input type="number" id="deviceConsumption" placeholder="Consumo (kWh)" required>
+          <select id="deviceMonth" required>
+              <option value="" disabled selected>Selecione o Mês</option>
+              <option value="Janeiro">Janeiro</option>
+              <option value="Fevereiro">Fevereiro</option>
+              <option value="Março">Março</option>
+              <option value="Abril">Abril</option>
+              <option value="Maio">Maio</option>
+              <option value="Junho">Junho</option>
+              <option value="Julho">Julho</option>
+              <option value="Agosto">Agosto</option>
+              <option value="Setembro">Setembro</option>
+              <option value="Outubro">Outubro</option>
+              <option value="Novembro">Novembro</option>
+              <option value="Dezembro">Dezembro</option>
+          </select>
+          <button type="submit">Adicionar</button>
       </form>
-    </div>
+  </div>
 
-    <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
+<!-- Gráficos de consumo de energia e consumo total por mês -->
+<div class="charts-container">
+  <div style="max-width: 400px; margin: auto; padding: 20px;">
       <canvas id="energyChart"></canvas>
-    </div>
-
-    <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
+  </div>
+  <div style="max-width: 400px; margin: auto; padding: 20px;">
       <canvas id="monthlyChart"></canvas>
-    </div>
-  </section>
+  </div>
+</div>
 
   <script>
-    const devices = [];
+    // Dados fictícios de consumo de energia (em kWh)
+    const devices = []; // Array para armazenar os dados dos aparelhos
 
     const data = {
       labels: ['Geladeira', 'Ar Condicionado', 'Lâmpada', 'Micro-ondas', 'TV'],
       datasets: [{
         label: 'Consumo de Energia (kWh)',
-        data: [120, 250, 30, 90, 60],
+        data: [120, 250, 30, 90, 60], // valores de consumo
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)', 
-          'rgba(255, 206, 86, 0.2)', 
-          'rgba(75, 192, 192, 0.2)', 
-          'rgba(153, 102, 255, 0.2)' 
+          'rgba(255, 99, 132, 0.2)', // Geladeira - cor rosa
+          'rgba(54, 162, 235, 0.2)', // Ar Condicionado - cor azul
+          'rgba(255, 206, 86, 0.2)', // Lâmpada - cor amarela
+          'rgba(75, 192, 192, 0.2)', // Micro-ondas - cor verde
+          'rgba(153, 102, 255, 0.2)' // TV - cor roxa
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)', 
-          'rgba(255, 206, 86, 1)', 
-          'rgba(75, 192, 192, 1)', 
-          'rgba(153, 102, 255, 1)' 
+          'rgba(255, 99, 132, 1)', // Geladeira - cor rosa
+          'rgba(54, 162, 235, 1)', // Ar Condicionado - cor azul
+          'rgba(255, 206, 86, 1)', // Lâmpada - cor amarela
+          'rgba(75, 192, 192, 1)', // Micro-ondas - cor verde
+          'rgba(153, 102, 255, 1)' // TV - cor roxa
         ],
         borderWidth: 1
       }]
@@ -109,52 +335,68 @@
       }
     };
 
+    // Criando o gráfico de consumo de energia
     const ctx = document.getElementById('energyChart').getContext('2d');
     const energyChart = new Chart(ctx, config);
 
+    // Função para calcular o consumo total por mês
     function calculateTotalConsumption(month) {
       return devices
         .filter(device => device.month.toLowerCase() === month.toLowerCase())
         .reduce((total, device) => total + device.consumption, 0);
     }
 
+    const sidebar = document.querySelector('.sidebar');
+    const menuBtn = document.querySelector('.bx-menu');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('close');
+    });
+
+    // Função para adicionar consumo
     function addConsumption(event) {
-      event.preventDefault();
+      event.preventDefault(); // Impede o envio padrão do formulário
 
       const name = document.getElementById('deviceName').value;
       const consumption = parseFloat(document.getElementById('deviceConsumption').value);
       const month = document.getElementById('deviceMonth').value;
 
+      // Adicionar o novo aparelho ao array
       devices.push({ name, consumption, month });
 
+      // Atualizar os gráficos
       updateEnergyChart();
       updateMonthlyChart();
 
+      // Limpar o formulário
       document.getElementById('energyForm').reset();
     }
 
+    // Função para atualizar o gráfico de consumo de energia
     function updateEnergyChart() {
-      const labels = [...new Set(devices.map(device => device.name))];
+      const labels = [...new Set(devices.map(device => device.name))]; // Obter nomes únicos dos aparelhos
       const consumptionData = labels.map(label => {
         return devices.filter(device => device.name === label).reduce((total, device) => total + device.consumption, 0);
       });
 
       energyChart.data.labels = labels;
       energyChart.data.datasets[0].data = consumptionData;
-      energyChart.update();
+      energyChart.update(); // Atualiza o gráfico
     }
 
+    // Gráfico de consumo total por mês
     const monthlyData = {
       labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
       datasets: [{
         label: 'Consumo Total por Mês (kWh)',
-        data: Array(12).fill(0),
+        data: Array(12).fill(0), // Inicializa com zeros
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1
       }]
     };
 
+    // Configuração do gráfico de consumo total por mês
     const monthlyConfig = {
       type: 'bar',
       data: monthlyData,
@@ -167,14 +409,17 @@
       }
     };
 
+    // Criando o gráfico de consumo total por mês
     const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
     const monthlyChart = new Chart(ctxMonthly, monthlyConfig);
 
+    // Função para atualizar o gráfico de consumo total por mês
     function updateMonthlyChart() {
       monthlyData.datasets[0].data = monthlyData.labels.map(month => calculateTotalConsumption(month));
-      monthlyChart.update();
+      monthlyChart.update(); // Atualiza o gráfico
     }
 
+    // Adiciona o evento ao formulário
     document.getElementById('energyForm').addEventListener('submit', addConsumption);
   </script>
 </body>
