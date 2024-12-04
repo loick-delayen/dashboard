@@ -52,7 +52,6 @@
       <span class="text">Gráficos Detalhados</span>
     </div>
 
-    <!-- Formulário para adicionar consumo de energia -->
     <div>
       <h2>Adicionar Consumo de Energia</h2>
       <form id="energyForm">
@@ -63,39 +62,36 @@
       </form>
     </div>
 
-    <!-- Gráfico de consumo de energia -->
     <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
       <canvas id="energyChart"></canvas>
     </div>
 
-    <!-- Gráfico de consumo total por mês -->
     <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
       <canvas id="monthlyChart"></canvas>
     </div>
   </section>
 
   <script>
-    // Dados fictícios de consumo de energia (em kWh)
-    const devices = []; // Array para armazenar os dados dos aparelhos
+    const devices = [];
 
     const data = {
       labels: ['Geladeira', 'Ar Condicionado', 'Lâmpada', 'Micro-ondas', 'TV'],
       datasets: [{
         label: 'Consumo de Energia (kWh)',
-        data: [120, 250, 30, 90, 60], // valores de consumo
+        data: [120, 250, 30, 90, 60],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)', // Geladeira - cor rosa
-          'rgba(54, 162, 235, 0.2)', // Ar Condicionado - cor azul
-          'rgba(255, 206, 86, 0.2)', // Lâmpada - cor amarela
-          'rgba(75, 192, 192, 0.2)', // Micro-ondas - cor verde
-          'rgba(153, 102, 255, 0.2)' // TV - cor roxa
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)', 
+          'rgba(255, 206, 86, 0.2)', 
+          'rgba(75, 192, 192, 0.2)', 
+          'rgba(153, 102, 255, 0.2)' 
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)', // Geladeira - cor rosa
-          'rgba(54, 162, 235, 1)', // Ar Condicionado - cor azul
-          'rgba(255, 206, 86, 1)', // Lâmpada - cor amarela
-          'rgba(75, 192, 192, 1)', // Micro-ondas - cor verde
-          'rgba(153, 102, 255, 1)' // TV - cor roxa
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)', 
+          'rgba(255, 206, 86, 1)', 
+          'rgba(75, 192, 192, 1)', 
+          'rgba(153, 102, 255, 1)' 
         ],
         borderWidth: 1
       }]
@@ -113,61 +109,52 @@
       }
     };
 
-    // Criando o gráfico de consumo de energia
     const ctx = document.getElementById('energyChart').getContext('2d');
     const energyChart = new Chart(ctx, config);
 
-    // Função para calcular o consumo total por mês
     function calculateTotalConsumption(month) {
       return devices
         .filter(device => device.month.toLowerCase() === month.toLowerCase())
         .reduce((total, device) => total + device.consumption, 0);
     }
 
-    // Função para adicionar consumo
     function addConsumption(event) {
-      event.preventDefault(); // Impede o envio padrão do formulário
+      event.preventDefault();
 
       const name = document.getElementById('deviceName').value;
       const consumption = parseFloat(document.getElementById('deviceConsumption').value);
       const month = document.getElementById('deviceMonth').value;
 
-      // Adicionar o novo aparelho ao array
       devices.push({ name, consumption, month });
 
-      // Atualizar os gráficos
       updateEnergyChart();
       updateMonthlyChart();
 
-      // Limpar o formulário
       document.getElementById('energyForm').reset();
     }
 
-    // Função para atualizar o gráfico de consumo de energia
     function updateEnergyChart() {
-      const labels = [...new Set(devices.map(device => device.name))]; // Obter nomes únicos dos aparelhos
+      const labels = [...new Set(devices.map(device => device.name))];
       const consumptionData = labels.map(label => {
         return devices.filter(device => device.name === label).reduce((total, device) => total + device.consumption, 0);
       });
 
       energyChart.data.labels = labels;
       energyChart.data.datasets[0].data = consumptionData;
-      energyChart.update(); // Atualiza o gráfico
+      energyChart.update();
     }
 
-    // Gráfico de consumo total por mês
     const monthlyData = {
       labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
       datasets: [{
         label: 'Consumo Total por Mês (kWh)',
-        data: Array(12).fill(0), // Inicializa com zeros
+        data: Array(12).fill(0),
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1
       }]
     };
 
-    // Configuração do gráfico de consumo total por mês
     const monthlyConfig = {
       type: 'bar',
       data: monthlyData,
@@ -180,17 +167,14 @@
       }
     };
 
-    // Criando o gráfico de consumo total por mês
     const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
     const monthlyChart = new Chart(ctxMonthly, monthlyConfig);
 
-    // Função para atualizar o gráfico de consumo total por mês
     function updateMonthlyChart() {
       monthlyData.datasets[0].data = monthlyData.labels.map(month => calculateTotalConsumption(month));
-      monthlyChart.update(); // Atualiza o gráfico
+      monthlyChart.update();
     }
 
-    // Adiciona o evento ao formulário
     document.getElementById('energyForm').addEventListener('submit', addConsumption);
   </script>
 </body>
