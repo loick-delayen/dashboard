@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="sidebar close">
+    <div class="logo-details">
+      <i class='bx bxl-c-plus-plus'></i>
+      <span class="logo_name">CodingLab</span>
+    </div>
+    <ul class="nav-links">
+      <li>
+        <a href="#">
+          <i class='bx bx-shape-triangle'></i>
+          <span class="link_name">Dashboard</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Category</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">
+          <i class='bx bx-shape-triangle'></i>
+          <span class="link_name">Analytics</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Analytics</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">
+          <i class='bx bx-shape-triangle'></i>
+          <span class="link_name">Chart</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Chart</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <section class="home-section">
+    <div class="home-content">
+      <i class='bx bx-menu'></i>
+      <span class="text">Gráficos Detalhados</span>
+    </div>
+
+    <!-- Formulário para adicionar consumo de energia -->
+    <div>
+      <h2>Adicionar Consumo de Energia</h2>
+      <form id="energyForm">
+        <input type="text" id="deviceName" placeholder="Nome do Aparelho" required>
+        <input type="number" id="deviceConsumption" placeholder="Consumo (kWh)" required>
+        <input type="text" id="deviceMonth" placeholder="Mês (ex: Janeiro)" required>
+        <button type="submit">Adicionar</button>
+      </form>
+    </div>
+
+    <!-- Gráfico de consumo de energia -->
+    <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
+      <canvas id="energyChart"></canvas>
+    </div>
+
+    <!-- Gráfico de consumo total por mês -->
+    <div style="max-width: 800px; margin: auto; padding: 20px; margin-top: 10%;">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </section>
+
+  <script>
+    // Dados fictícios de consumo de energia (em kWh)
+    const devices = []; // Array para armazenar os dados dos aparelhos
+
+    const data = {
+      labels: ['Geladeira', 'Ar Condicionado', 'Lâmpada', 'Micro-ondas', 'TV'],
+      datasets: [{
+        label: 'Consumo de Energia (kWh)',
+        data: [120, 250, 30, 90, 60], // valores de consumo
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)', // Geladeira - cor rosa
+          'rgba(54, 162, 235, 0.2)', // Ar Condicionado - cor azul
+          'rgba(255, 206, 86, 0.2)', // Lâmpada - cor amarela
+          'rgba(75, 192, 192, 0.2)', // Micro-ondas - cor verde
+          'rgba(153, 102, 255, 0.2)' // TV - cor roxa
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)', // Geladeira - cor rosa
+          'rgba(54, 162, 235, 1)', // Ar Condicionado - cor azul
+          'rgba(255, 206, 86, 1)', // Lâmpada - cor amarela
+          'rgba(75, 192, 192, 1)', // Micro-ondas - cor verde
+          'rgba(153, 102, 255, 1)' // TV - cor roxa
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    const config = {
+      type: 'bar',
+      data: data,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    };
+
+    // Criando o gráfico de consumo de energia
+    const ctx = document.getElementById('energyChart').getContext('2d');
+    const energyChart = new Chart(ctx, config);
+
+    // Função para calcular o consumo total por mês
+    function calculateTotalConsumption(month) {
+      return devices
+        .filter(device => device.month.toLowerCase() === month.toLowerCase())
+        .reduce((total, device) => total + device.consumption, 0);
+    }
+
+    // Função para adicionar consumo
+    function addConsumption(event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+
+      const name = document.getElementById('deviceName').value;
+      const consumption = parseFloat(document.getElementById('deviceConsumption').value);
+      const month = document.getElementById('deviceMonth').value;
+
+      // Adicionar o novo aparelho ao array
+      devices.push({ name, consumption, month });
+
+      // Atualizar os gráficos
+      updateEnergyChart();
+      updateMonthlyChart();
+
+      // Limpar o formulário
+      document.getElementById('energyForm').reset();
+    }
+
+    // Função para atualizar o gráfico de consumo de energia
+    function updateEnergyChart() {
+      const labels = [...new Set(devices.map(device => device.name))]; // Obter nomes únicos dos aparelhos
+      const consumptionData = labels.map(label => {
+        return devices.filter(device => device.name === label).reduce((total, device) => total + device.consumption, 0);
+      });
+
+      energyChart.data.labels = labels;
+      energyChart.data.datasets[0].data = consumptionData;
+      energyChart.update(); // Atualiza o gráfico
+    }
+
+    // Gráfico de consumo total por mês
+    const monthlyData = {
+      labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      datasets: [{
+        label: 'Consumo Total por Mês (kWh)',
+        data: Array(12).fill(0), // Inicializa com zeros
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    };
+
+    // Configuração do gráfico de consumo total por mês
+    const monthlyConfig = {
+      type: 'bar',
+      data: monthlyData,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    };
+
+    // Criando o gráfico de consumo total por mês
+    const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(ctxMonthly, monthlyConfig);
+
+    // Função para atualizar o gráfico de consumo total por mês
+    function updateMonthlyChart() {
+      monthlyData.datasets[0].data = monthlyData.labels.map(month => calculateTotalConsumption(month));
+      monthlyChart.update(); // Atualiza o gráfico
+    }
+
+    // Adiciona o evento ao formulário
+    document.getElementById('energyForm').addEventListener('submit', addConsumption);
+  </script>
+</body>
+
+</html>
